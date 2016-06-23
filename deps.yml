@@ -1,0 +1,10 @@
+name: cdep
+os: posix
+repository:
+deps:
+    - gmock:
+        version: 1.7.0
+    - glog:
+        version: 0.3.4
+    - gflags:
+        version: 2.1.2

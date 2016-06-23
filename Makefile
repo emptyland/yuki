@@ -4,10 +4,10 @@ THIRD_PARTY_LIBS=third_party/libs/libgflags.a \
                  third_party/libs/libgtest.a \
                  third_party/libs/libgtest_main.a
 
-all: src/libyuki.a
+all: src/libyuki.a src/yuki_test
 
-src/libyuki.a: $(THIRD_PARTY_LIBS)
-	cd src && $(MAKE)
+src/yuki_test src/libyuki.a: $(THIRD_PARTY_LIBS)
+	cd src && $(MAKE) all
 
 $(THIRD_PARTY_LIBS):
 	CDEP_PATH=cdep python cdep/cdep.py

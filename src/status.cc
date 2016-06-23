@@ -25,7 +25,7 @@ Status Status::Verrorf(Status::CodeTy code, const char *fmt, va_list ap) {
 
 	Status rv;
 	rv.state_.reset(buf);
-	return std::move(rv);
+	return rv;
 }
 
 std::string Status::ToString() const {

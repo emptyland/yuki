@@ -1,6 +1,7 @@
 #include "yuki/strings.h"
 #include "yuki/slice.h"
 #include "yuki/file_path.h"
+#include "pcre.h"
 #include <memory>
 
 namespace yuki {
@@ -76,6 +77,66 @@ std::string Strings::SourceBinary(SliceRef bin) {
 	}
 	buf.append("};");
 	return buf;
+}
+
+/*static*/ Status Strings::Split(const std::string subject,
+                                 const std::string &regex,
+                                 std::vector<std::string> *part) {
+    const char *err = nullptr;
+    int err_index = 0;
+    auto pcre = pcre_compile(regex.c_str(), PCRE_EXTRA, &err, &err_index,
+                             nullptr);
+    if (!pcre) {
+        return Status::Errorf(Status::kCorruption, "pcre fail: %s", err);
+    }
+
+    int result[30] = {0};
+    int rv = 0, offset = 0, start = 0;
+    while ((rv = pcre_exec(pcre, nullptr, subject.c_str(),
+                           static_cast<int>(subject.size()),
+                           offset, 0, result, 30)) > 0) {
+        offset = result[1];
+        part->emplace_back(&subject[start], result[0] - start);
+        start = result[1];
+    }
+
+    if (subject.size() > static_cast<size_t>(start)) {
+        part->emplace_back(&subject[start], subject.size() - start);
+    }
+    pcre_free(pcre);
+    return Status::OK();
+}
+
+/*static*/ Status Strings::Split(const char *subject,
+                                 const char *regex,
+                                 std::vector<Slice> *part) {
+    if (!subject) {
+        return Status::OK();
+    }
+
+    const char *err = nullptr;
+    int err_index = 0;
+    auto pcre = pcre_compile(regex, PCRE_EXTRA, &err, &err_index,
+                             nullptr);
+    if (!pcre) {
+        return Status::Errorf(Status::kCorruption, "pcre fail: %s", err);
+    }
+
+    int subject_len = static_cast<int>(strlen(subject));
+    int result[30] = {0};
+    int rv = 0, offset = 0, start = 0;
+    while ((rv = pcre_exec(pcre, nullptr, subject, subject_len, offset, 0,
+                           result, 30)) > 0) {
+        offset = result[1];
+        part->emplace_back(&subject[start], result[0] - start);
+        start = result[1];
+    }
+
+    if (subject_len > start) {
+        part->emplace_back(&subject[start], subject_len - start);
+    }
+    pcre_free(pcre);
+    return Status::OK();
 }
 
 } // namespace yuki

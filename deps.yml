@@ -10,3 +10,5 @@ deps:
         version: 0.3.4
     - gflags:
         version: 2.1.2
+    - pcre:
+        version: "8.38"

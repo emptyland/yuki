@@ -26,7 +26,7 @@ all: yuki_test
 	./yuki_test
 
 yuki_test: libyuki.a $(TEST_OBJS)
-	$(CXX) -L. -lyuki -L../third-party/libs -lgmock -lglog -lgflags $(TEST_OBJS) -o yuki_test
+	$(CXX) -L. -lyuki -L../third-party/libs -lgmock -lglog -lgflags -lpcre $(TEST_OBJS) -o yuki_test
 
 libyuki.a: $(OBJS)
 	ar rs libyuki.a $(OBJS)

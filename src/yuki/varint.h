@@ -1,6 +1,7 @@
 #ifndef YUKI_VARINT_H
 #define YUKI_VARINT_H
 
+#include "yuki/bits.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -17,6 +18,9 @@ public:
 
 	static inline uint32_t Decode32(const uint8_t *in, size_t *len);
 	static uint64_t Decode64(const uint8_t *in, size_t *len);
+
+    static inline int Sizeof32(uint32_t value);
+    static inline int Sizeof64(uint64_t value);
 
 	// For signed integer
 	static inline size_t EncodeS64(int64_t in, uint8_t *out);
@@ -63,6 +67,22 @@ inline int64_t Varint::DecodeS64(const uint8_t *in, size_t *len) {
 
 inline int32_t Varint::DecodeS32(const uint8_t *in, size_t *len) {
 	return ZigZag::Decode32(Decode32(in, len));
+}
+
+inline int Varint::Sizeof32(uint32_t value) {
+    if (value == 0) {
+        return 1;
+    } else {
+        return (32 - Bits::CountLeadingZeros32(value) + 6) / 7;
+    }
+}
+
+inline int Varint::Sizeof64(uint64_t value) {
+    if (value == 0) {
+        return 1;
+    } else {
+        return (64 - Bits::CountLeadingZeros64(value) + 6) / 7;
+    }
 }
 
 inline uint64_t ZigZag::Encode64(int64_t in) {

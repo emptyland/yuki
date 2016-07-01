@@ -79,6 +79,10 @@ inline T RoundUp(T x, intptr_t m) {
   return RoundDown<T>(static_cast<T>(x + m - 1), m);
 }
 
+inline size_t AlignDownBounds(size_t bounds, size_t value) {
+    return (value + bounds - 1) & (~(bounds - 1));
+}
+
 } // namespace yuki
 
 #endif //YUKI_UTILS_H

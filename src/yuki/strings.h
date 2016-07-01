@@ -24,6 +24,17 @@ public:
 	__attribute__ (( __format__ (__printf__, 1, 2)))
 	static std::string Format(const char *fmt, ...);
 
+    /**
+     * split string "total" by "regex" to part
+     */
+    static Status Split(const std::string subject,
+                        const std::string &regex,
+                        std::vector<std::string> *part);
+
+    static Status Split(const char *subject,
+                        const char *regex,
+                        std::vector<Slice> *part);
+
 	// Read or write a string in a file:
 	static Status FromFile(FileRef name, std::string *buf);
 	static Status ToFile(FileRef name, const std::string &buf);

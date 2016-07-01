@@ -86,5 +86,51 @@ TEST(VarintTest, SignedFuzzy) {
 	}
 }
 
+TEST(VarintTest, Sizeof32) {
+    ASSERT_EQ(1, Varint::Sizeof32(0));
+    ASSERT_EQ(2, Varint::Sizeof32(1 << 7));
+    ASSERT_EQ(2, Varint::Sizeof32(1 << 8));
+    ASSERT_EQ(2, Varint::Sizeof32(1 << 13));
+
+    ASSERT_EQ(3, Varint::Sizeof32(1 << 14));
+    ASSERT_EQ(3, Varint::Sizeof32(1 << 20));
+
+    ASSERT_EQ(4, Varint::Sizeof32(1 << 21));
+    ASSERT_EQ(4, Varint::Sizeof32(1 << 27));
+
+    ASSERT_EQ(5, Varint::Sizeof32(1 << 28));
+    ASSERT_EQ(5, Varint::Sizeof32(1 << 31));
+}
+
+TEST(VarintTest, Sizeof64) {
+    ASSERT_EQ(1, Varint::Sizeof64(0));
+    ASSERT_EQ(2, Varint::Sizeof64(1 << 7));
+    ASSERT_EQ(2, Varint::Sizeof64(1 << 8));
+    ASSERT_EQ(2, Varint::Sizeof64(1 << 13));
+
+    ASSERT_EQ(3, Varint::Sizeof64(1 << 14));
+    ASSERT_EQ(3, Varint::Sizeof64(1 << 20));
+
+    ASSERT_EQ(4, Varint::Sizeof64(1 << 21));
+    ASSERT_EQ(4, Varint::Sizeof64(1 << 27));
+
+    ASSERT_EQ(5, Varint::Sizeof64(1 << 28));
+    ASSERT_EQ(5, Varint::Sizeof64(1UL << 34));
+
+    ASSERT_EQ(6, Varint::Sizeof64(1UL << 35));
+    ASSERT_EQ(6, Varint::Sizeof64(1UL << 41));
+
+    ASSERT_EQ(7, Varint::Sizeof64(1UL << 42));
+    ASSERT_EQ(7, Varint::Sizeof64(1UL << 48));
+
+    ASSERT_EQ(8, Varint::Sizeof64(1UL << 49));
+    ASSERT_EQ(8, Varint::Sizeof64(1UL << 55));
+
+    ASSERT_EQ(9, Varint::Sizeof64(1UL << 56));
+    ASSERT_EQ(9, Varint::Sizeof64(1UL << 62));
+
+    ASSERT_EQ(10, Varint::Sizeof64(1UL << 63));
+}
+
 } // namespace yuki
 

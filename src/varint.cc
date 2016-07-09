@@ -7,9 +7,10 @@ namespace yuki {
 #define FILL_AND_TEST_OR_SET(c) \
 	out[i++] = (b | 0x80); \
 	TEST_OR_SET(c)
-/*static*/ size_t Varint::Encode32(uint32_t in, uint8_t *out) {
+/*static*/ size_t Varint::Encode32(uint32_t in, void *buf) {
 	size_t i = 0;
 	uint8_t b;
+    uint8_t *out = static_cast<uint8_t *>(buf);
 	if ((b = ((in & 0xFU << 28) >> 28)) != 0) // 29~32
 		goto bit_28_k5;
 	if ((TEST_OR_SET(3)) != 0) // 22~28
@@ -41,9 +42,10 @@ bit_07_k8:
 #define FILL_AND_TEST_OR_SET(c) \
 	out[i++] = (b | 0x80); \
 	TEST_OR_SET(c)
-/*static*/ size_t Varint::Encode64(uint64_t in, uint8_t *out) {
+/*static*/ size_t Varint::Encode64(uint64_t in, void *buf) {
 	size_t i = 0;
 	uint8_t b;
+    uint8_t *out = static_cast<uint8_t *>(buf);
 	//       [+---+---+---+---]
 	if (in & 0xFFFE000000000000ULL) {
 		if ((b = ((in & 0x1ULL << 63) >> 63)) != 0) // 64
@@ -98,10 +100,11 @@ bit_07_k8:
 #undef FILL_AND_TEST_OR_SET
 #undef TEST_OR_SET
 
-/*static*/ uint64_t Varint::Decode64(const uint8_t *in, size_t *len) {
+/*static*/ uint64_t Varint::Decode64(const void *buf, size_t *len) {
 	size_t i = 0;
 	uint8_t b;
 	uint64_t out = 0;
+    const uint8_t *in = static_cast<const uint8_t *>(buf);
 	while ((b = in[i++]) >= 0x80) {
 		out |= (b & 0x7f);
 		out <<= 7;

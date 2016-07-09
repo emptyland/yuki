@@ -18,7 +18,7 @@ template <class T, size_t N>
 char (&ArraySizeHelper(const T (&array)[N]))[N];
 #endif
 
-#define arraysize(array) (sizeof(ArraySizeHelper(array)))
+#define arraysize(array) (sizeof(::yuki::ArraySizeHelper(array)))
 
 template<class T, class F>
 inline T bit_cast(F from) {

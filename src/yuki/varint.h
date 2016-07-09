@@ -13,21 +13,21 @@ public:
 	static const size_t kMax32Len =  5;
 
 	// For unsigned integer
-	static size_t Encode32(uint32_t in, uint8_t *out);
-	static size_t Encode64(uint64_t in, uint8_t *out);
+	static size_t Encode32(uint32_t in, void *out);
+	static size_t Encode64(uint64_t in, void *out);
 
-	static inline uint32_t Decode32(const uint8_t *in, size_t *len);
-	static uint64_t Decode64(const uint8_t *in, size_t *len);
+	static inline uint32_t Decode32(const void *in, size_t *len);
+	static uint64_t Decode64(const void *in, size_t *len);
 
     static inline int Sizeof32(uint32_t value);
     static inline int Sizeof64(uint64_t value);
 
 	// For signed integer
-	static inline size_t EncodeS64(int64_t in, uint8_t *out);
-	static inline size_t EncodeS32(int32_t in, uint8_t *out);
+	static inline size_t EncodeS64(int64_t in, void *out);
+	static inline size_t EncodeS32(int32_t in, void *out);
 
-	static inline int64_t DecodeS64(const uint8_t *in, size_t *len);
-	static inline int32_t DecodeS32(const uint8_t *in, size_t *len);
+	static inline int64_t DecodeS64(const void *in, size_t *len);
+	static inline int32_t DecodeS32(const void *in, size_t *len);
 
 private:
 	Varint() = delete;
@@ -49,23 +49,23 @@ private:
 	~ZigZag() = delete;
 }; // class ZigZag
 
-inline uint32_t Varint::Decode32(const uint8_t *in, size_t *len) {
+inline uint32_t Varint::Decode32(const void *in, size_t *len) {
 	return static_cast<uint32_t>(Decode64(in, len));
 }
 
-inline size_t Varint::EncodeS64(int64_t in, uint8_t *out) {
+inline size_t Varint::EncodeS64(int64_t in, void *out) {
 	return Encode64(ZigZag::Encode64(in), out);
 }
 
-inline size_t Varint::EncodeS32(int32_t in, uint8_t *out) {
+inline size_t Varint::EncodeS32(int32_t in, void *out) {
 	return Encode32(ZigZag::Encode32(in), out);
 }
 
-inline int64_t Varint::DecodeS64(const uint8_t *in, size_t *len) {
+inline int64_t Varint::DecodeS64(const void *in, size_t *len) {
 	return ZigZag::Decode64(Decode64(in, len));
 }
 
-inline int32_t Varint::DecodeS32(const uint8_t *in, size_t *len) {
+inline int32_t Varint::DecodeS32(const void *in, size_t *len) {
 	return ZigZag::Decode32(Decode32(in, len));
 }
 

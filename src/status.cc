@@ -28,6 +28,21 @@ Status Status::Verrorf(Status::CodeTy code, const char *fmt, va_list ap) {
 	return rv;
 }
 
+Status::Status(const Status &other) {
+    operator=(other);
+}
+
+void Status::operator = (const Status &other) {
+    if (other.state_) {
+        size_t size = other.MessageLength() + 4 + 1 + 4;
+        char *buf = new char[kMessageOffset + other.MessageLength()];
+        memcpy(buf, other.state_.get(), size);
+        state_.reset(buf);
+    } else {
+        state_.reset();
+    }
+}
+
 std::string Status::ToString() const {
 	std::string rv;
 	switch (Code()) {

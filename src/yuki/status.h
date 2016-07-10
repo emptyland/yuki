@@ -22,10 +22,10 @@ public:
 	};
 
 	Status() = default;
-
 	Status(Status &&other) { state_.reset(other.state_.release()); }
-
 	~Status() = default;
+    Status(const Status &);
+    void operator = (const Status &);
 
 	void operator = (Status &&other) { state_.reset(other.state_.release()); }
 	explicit operator bool() const { return Ok(); }
@@ -34,7 +34,11 @@ public:
 
 	static Status Verrorf(CodeTy code, const char *fmt, va_list ap);
 	inline static Status Errorf(CodeTy code, const char *fmt, ...);
-	inline static Status Systemf(const char *fmt, ...);
+	inline static Status NotFoundf(const char *fmt, ...);
+    inline static Status NotSupportedf(const char *fmt, ...);
+    inline static Status Corruptionf(const char *fmt, ...);
+    inline static Status InvalidArgumentf(const char *fmt, ...);
+    inline static Status Systemf(const char *fmt, ...);
 
 	inline CodeTy Code() const;
 
@@ -48,9 +52,6 @@ private:
 	static const int kCodeOffset = 4;
 	static const int kExtraOffset = 5;
 	static const int kMessageOffset = 9;
-
-	Status(const Status &) = delete;
-	void operator = (const Status &) = delete;
 
 	uint32_t MessageLength() const {
 		DCHECK(Failed());
@@ -84,6 +85,38 @@ inline Status Status::Systemf(const char *fmt, ...) {
 	Status rv(Verrorf(kSystemError, fmt, ap));
 	va_end(ap);
 	return rv;
+}
+
+inline Status Status::NotFoundf(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Status rv(Verrorf(kNotFound, fmt, ap));
+    va_end(ap);
+    return rv;
+}
+
+inline Status Status::NotSupportedf(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Status rv(Verrorf(kNotSupported, fmt, ap));
+    va_end(ap);
+    return rv;
+}
+
+inline Status Status::Corruptionf(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Status rv(Verrorf(kCorruption, fmt, ap));
+    va_end(ap);
+    return rv;
+}
+
+inline Status Status::InvalidArgumentf(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    Status rv(Verrorf(kInvalidArgument, fmt, ap));
+    va_end(ap);
+    return rv;
 }
 
 #define SYSCALL_IF(cond, ...) \

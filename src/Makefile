@@ -1,5 +1,7 @@
 OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 
+CC=clang
+CXX=clang++
 CFLAGS=-I../third-party/include -I. -Wall -Wextra
 CXXFLAGS=-std=c++11 -I../third-party/include -I. -Wall -Wextra
 

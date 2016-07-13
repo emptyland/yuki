@@ -1,7 +1,21 @@
-CC=gcc
-CXX=g++
-CFLAGS=-I../third-party/include -I. -O3 -Wall -Wextra
-CXXFLAGS=-std=c++11 -I../third-party/include -I. -O3 -Wall -Wextra
+OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+
+CFLAGS=-I../third-party/include -I. -Wall -Wextra
+CXXFLAGS=-std=c++11 -I../third-party/include -I. -Wall -Wextra
+
+ifeq ($(OS), Linux)
+	LIBS=-lpthread -lunwind -L../third-party/libs -lglog -lpcre -lgmock
+else
+	LIBS=-lpthread -L../third-party/libs -lglog -lpcre -lgmock
+endif
+
+ifeq ($(DEBUG), 1)
+	CFLAGS+=-O0 -g -DDEBUG
+	CXXFLAGS+=-O0 -g -DDEBUG
+else
+	CFLAGS+=-O2
+	CXXFLAGS+=-O2
+endif
 
 OBJS=at_exit.o \
 	 file_path.o \
@@ -19,14 +33,13 @@ TEST_OBJS=all_test.o \
           slice_test.o \
           status_test.o \
           strings_test.o \
-          varint_test.o \
           zone_test.o
 
-all: yuki_test
+all: yuki_test libyuki.a
 	./yuki_test
 
-yuki_test: libyuki.a $(TEST_OBJS)
-	$(CXX) -L. -lyuki -L../third-party/libs -lgmock -lglog -lgflags -lpcre $(TEST_OBJS) -o yuki_test
+yuki_test: $(TEST_OBJS) $(OBJS)
+	$(CXX) $(OBJS) $(TEST_OBJS) -o yuki_test $(LIBS)
 
 libyuki.a: $(OBJS)
 	ar rs libyuki.a $(OBJS)
@@ -37,6 +50,6 @@ distclean: clean
 	rm -r ../third-party
 
 clean:
-	rm -f $(OBJS) libyuki.a yuki_test
+	rm -f $(OBJS) $(TEST_OBJS) libyuki.a yuki_test
 
 
